@@ -18,7 +18,7 @@ if __name__ == '__main__':
     test_set.append(test)
     test_set.append(test2)
     
-    # converting to numpy not neccessary i guess?
+    # converting to numpy not neccessary
     #np_set = np.array(test_set)
     predictions = student.predict(test_set)
     
