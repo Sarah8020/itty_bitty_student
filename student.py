@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 from numpy import load
 from os import listdir
+import time
 
 def get_pred_accuracy(preds, reals):
     matches = 0
@@ -57,12 +58,12 @@ if __name__ == '__main__':
     tf.random.set_seed(0)
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Flatten())
-    # 0.6559633016586304 (1.5mb tflite file)
+    # 0.6559633016586304 accuracy (1.5mb tflite file)
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dropout(.05))
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dense(4, activation=tf.nn.softmax))
-    # 0.6605504751205444 (15.1mb tflite file)
+    # 0.6605504751205444 accuracy (15.1mb tflite file)
     '''
     model.add(tf.keras.layers.Dense(1024, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dense(512, activation=tf.nn.relu))
@@ -73,11 +74,13 @@ if __name__ == '__main__':
     model.add(tf.keras.layers.Dense(4, activation=tf.nn.softmax))
     '''
     
+    start_train_time = time.time()
     # train
     model.compile(optimizer='adam',
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy'])
     model.fit(x_train, y_train, epochs=4)
+    print('training time:', time.time() - start_train_time, 'seconds')
     
     # get unseen testing data
     eval_test_file = 'eeg_no_pred/' + 'EP_PSG_031021_EE193id20.npz'
