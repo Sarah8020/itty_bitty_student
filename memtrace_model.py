@@ -1,9 +1,10 @@
 import tensorflow as tf
 import numpy as np
 from numpy import load
-import time
+import tracemalloc
 
 if __name__ == '__main__':
+    tracemalloc.start()
     # ----open model
     student = tf.keras.models.load_model('student.model')
     
@@ -14,10 +15,11 @@ if __name__ == '__main__':
         test_set.append(test)
     
     # ----make predictions
-    start_time = time.time()
     predictions = student.predict(test_set)
     # get prediction generation time
-    print('time to generate 1000 predictions: ', time.time() - start_time)
+    peak_mem = tracemalloc.get_traced_memory()[1]
+    print('peak mem usage:', peak_mem, 'bytes')
+    tracemalloc.stop()
     
     # ----print some predictions
     print('predictions:')
