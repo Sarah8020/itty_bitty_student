@@ -8,7 +8,7 @@ def create_preds():
     
     # ----make test inputs
     test_set = []
-    for i in range(1000):
+    for i in range(100):
         test = [0] * 3000
         test_set.append(test)
     
