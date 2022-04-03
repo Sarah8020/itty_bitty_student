@@ -1,4 +1,5 @@
 import tensorflow as tf
+import keras
 import numpy as np
 from numpy import load
 from os import listdir
@@ -19,6 +20,25 @@ def get_tsn_accuracy(preds, reals, matches, y_length):
     accuracy = matches / y_length
     print('tsn predictions overall accuracy: ', str(accuracy))
     return matches
+
+def get_prec(this_class, y_preds, y_trues):
+    true_count = 0
+    for num in y_trues:
+        if num == this_class:
+            true_count += 1
+    correct_preds = 0
+    for i in range(len(y_preds)):
+        if y_preds[i] == this_class and y_trues[i] == this_class:
+            correct_preds += 1
+    return (correct_preds / true_count), correct_preds
+
+def get_recall(this_class, y_preds, y_trues, correct_preds):
+    false_negs = 0
+    for i in range(len(y_preds)):
+        if y_preds[i] == this_class and y_trues[i] != this_class:
+            false_negs += 1
+    return correct_preds / (correct_preds + false_negs)
+    
 
 if __name__ == '__main__':
     # initialize testing data
@@ -78,7 +98,7 @@ if __name__ == '__main__':
     # train
     model.compile(optimizer='adam',
         loss='sparse_categorical_crossentropy',
-        metrics=['accuracy'])
+        metrics=[keras.metrics.SparseCategoricalAccuracy()])
     model.fit(x_train, y_train, epochs=4)
     print('training time:', time.time() - start_train_time, 'seconds')
     
@@ -101,3 +121,23 @@ if __name__ == '__main__':
     lite_student_model = conv.convert()
     with open('student_model.tflite', 'wb') as lite_file:
         lite_file.write(lite_student_model)
+        
+    # get precision/ recall (per class)
+    # get y preds for x_test
+    student = tf.keras.models.load_model('student.model')
+    predictions = student.predict(x_test)
+    y_preds = []
+    for i in range(len(predictions)):
+        y_preds.append(np.argmax(predictions[i]))
+    # get precision/ recall/ f1 score for each class
+    all_ys = [0,1,2,3]
+    f1s = []
+    for num in all_ys:
+        prec, correct_preds = get_prec(num, y_preds, y_test)
+        recall = get_recall(num, y_preds, y_test, correct_preds)
+        f1 = 0
+        if prec+recall != 0:
+            f1 = 2*((prec*recall)/(prec+recall))
+            f1s.append(f1)
+        print('class:', num, 'precision:', prec, 'recall:', recall, 'f1:', f1)
+    print('avg f1:', sum(f1s)/4)
