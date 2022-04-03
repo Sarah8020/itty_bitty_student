@@ -37,6 +37,8 @@ def get_recall(this_class, y_preds, y_trues, correct_preds):
     for i in range(len(y_preds)):
         if y_preds[i] == this_class and y_trues[i] != this_class:
             false_negs += 1
+    if (correct_preds + false_negs) < 0.000001:
+        return 0
     return correct_preds / (correct_preds + false_negs)
     
 
@@ -136,7 +138,7 @@ if __name__ == '__main__':
         prec, correct_preds = get_prec(num, y_preds, y_test)
         recall = get_recall(num, y_preds, y_test, correct_preds)
         f1 = 0
-        if prec+recall != 0:
+        if prec+recall > 0.000001:
             f1 = 2*((prec*recall)/(prec+recall))
             f1s.append(f1)
         print('class:', num, 'precision:', prec, 'recall:', recall, 'f1:', f1)
