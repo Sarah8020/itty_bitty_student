@@ -85,16 +85,6 @@ if __name__ == '__main__':
     model.add(tf.keras.layers.Dropout(.05))
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dense(4, activation=tf.nn.softmax))
-    # 0.6605504751205444 accuracy (15.1mb tflite file)
-    '''
-    model.add(tf.keras.layers.Dense(1024, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(512, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(256, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(32, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(4, activation=tf.nn.softmax))
-    '''
     
     start_train_time = time.time()
     # train
