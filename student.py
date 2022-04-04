@@ -101,7 +101,7 @@ if __name__ == '__main__':
     model.compile(optimizer='adam',
         loss='sparse_categorical_crossentropy',
         metrics=[keras.metrics.SparseCategoricalAccuracy()])
-    model.fit(x_train, y_train, epochs=4)
+    model.fit(x_train, y_train, epochs=8)
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # get unseen testing data
