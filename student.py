@@ -5,6 +5,7 @@ from numpy import load
 from os import listdir
 import time
 
+# get accuracy for a single prediction file
 def get_pred_accuracy(preds, reals):
     matches = 0
     for i in range(len(preds)):
@@ -13,6 +14,7 @@ def get_pred_accuracy(preds, reals):
     accuracy = matches / len(preds)
     return accuracy
     
+# get overall accuracy for prediction files
 def get_tsn_accuracy(preds, reals, matches, y_length):
     for i in range(len(preds)):
         if preds[i] == reals[i]:
@@ -21,6 +23,7 @@ def get_tsn_accuracy(preds, reals, matches, y_length):
     print('tsn predictions overall accuracy: ', str(accuracy))
     return matches
 
+# get precision for student
 def get_prec(this_class, y_preds, y_trues):
     true_count = 0
     for num in y_trues:
@@ -32,6 +35,7 @@ def get_prec(this_class, y_preds, y_trues):
             correct_preds += 1
     return (correct_preds / true_count), correct_preds
 
+# get recall for student
 def get_recall(this_class, y_preds, y_trues, correct_preds):
     false_negs = 0
     for i in range(len(y_preds)):
@@ -80,7 +84,7 @@ if __name__ == '__main__':
     tf.random.set_seed(0)
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Flatten())
-    # 0.6559633016586304 accuracy (1.5mb tflite file)
+    # 0.5563636422157288 accuracy
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dropout(.05))
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
@@ -91,11 +95,11 @@ if __name__ == '__main__':
     model.compile(optimizer='adam',
         loss='sparse_categorical_crossentropy',
         metrics=[keras.metrics.SparseCategoricalAccuracy()])
-    model.fit(x_train, y_train, epochs=8)
+    model.fit(x_train, y_train, epochs=10, shuffle=True, steps_per_epoch=200)
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # get unseen testing data
-    eval_test_file = 'eeg_no_pred/' + 'EP_PSG_031021_EE193id20.npz'
+    eval_test_file = 'eeg_no_pred/' + 'EP_PSG_052721_EE502_01id169.npz'
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
     y_test = eval_test_data['y']
@@ -133,3 +137,22 @@ if __name__ == '__main__':
             f1s.append(f1)
         print('class:', num, 'precision:', prec, 'recall:', recall, 'f1:', f1)
     print('avg f1:', sum(f1s)/4)
+    
+    count_other = 0
+    count_1 = 0
+    test_count_other = 0
+    test_count_1 = 0
+    for i in range(len(y_preds)):
+        if y_preds[i] == 1:
+            count_1 += 1
+        else:
+            count_other += 1
+        if y_test[i] == 1:
+            test_count_1 += 1
+        else:
+            test_count_other += 1
+    print('check if over predicting label 1 ----')
+    print('# of 1 labels in preds:', count_1)
+    print('# of other labels in preds', count_other)
+    print('# of 1 labels in real data:', test_count_1)
+    print('# of other labels in real data', test_count_other)
