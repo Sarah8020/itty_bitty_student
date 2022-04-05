@@ -85,6 +85,7 @@ if __name__ == '__main__':
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Flatten())
     # 0.5563636422157288 accuracy
+    # avg f1: 0.40243012120371624
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dropout(.05))
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
