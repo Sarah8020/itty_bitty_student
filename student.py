@@ -121,7 +121,7 @@ if __name__ == '__main__':
         
     # get precision/ recall (per class)
     # get y preds for x_test
-    student = tf.keras.models.load_model('student.model')
+    student = model
     predictions = student.predict(x_test)
     y_preds = []
     for i in range(len(predictions)):
