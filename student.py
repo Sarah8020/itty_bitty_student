@@ -41,7 +41,6 @@ def get_recall(this_class, y_preds, y_trues, correct_preds):
 
 def test_model(model, file_name):
     # get unseen testing data
-    #eval_test_file = 'eeg_no_pred/' + file_name
     eval_test_file = 'eeg_no_pred/' + file_name
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
@@ -70,30 +69,6 @@ def test_model(model, file_name):
         print('class:', num, 'precision:', prec, 'recall:', recall, 'f1:', f1)
     avg_f1 = sum(f1s)/4
     print('avg f1:', avg_f1)
-    
-    count_other = 0
-    count_1 = 0
-    test_count_other = 0
-    test_count_1 = 0
-    correct_3 = None
-    correct_arr = [0,0,0,0]
-    for i in range(len(y_preds)):
-        for num in [0,1,2,3]:
-            if y_preds[i] == y_test[i] == num:
-                correct_arr[num] = x_test[i]
-        if y_preds[i] == 1:
-            count_1 += 1
-        else:
-            count_other += 1
-        if y_test[i] == 1:
-            test_count_1 += 1
-        else:
-            test_count_other += 1
-    print('check if over predicting label 1 ----')
-    print('# of 1 labels in preds:', count_1)
-    print('# of other labels in preds', count_other)
-    print('# of 1 labels in real data:', test_count_1)
-    print('# of other labels in real data', test_count_other)
     
     return avg_f1, float(val_acc), item
 
@@ -149,8 +124,6 @@ if __name__ == '__main__':
     tf.random.set_seed(0)
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Flatten())
-    # 0.5563636422157288 accuracy
-    # avg f1: 0.40243012120371624
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dropout(.05))
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
@@ -165,14 +138,12 @@ if __name__ == '__main__':
     training_weight = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
     training_weight = dict(enumerate(training_weight))
     print('automated weights:', training_weight)
-    # automated weights: {0: 1.6415349887133184, 1: 0.49338489721147977, 2: 1.1972341126111294, 3: 1.8912873862158648}
     manual_weights = {0:1, 1:1, 2:1, 3:1}
     model.fit(x_train, y_train, epochs=10, shuffle=True, steps_per_epoch=200, class_weight=manual_weights)
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # test
     # get unseen testing data from some random file
-    # EP_PSG_050821_EE447id132.npz
     test_model(model, 'EP_PSG_031521_EE213id31.npz')
     
     # model info
