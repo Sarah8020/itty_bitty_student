@@ -118,7 +118,8 @@ if __name__ == '__main__':
         label_true_counts[y_true_labels[i]] += 1
         if y_train[i] == y_true_labels[i]:
             correct_preds[y_train[i]] += 1
-    print('3 info', len(y_train), label_true_counts[3], label_pred_counts[3], label_pred_counts[3]/len(y_train))
+    for num in [0,1,2,3]:
+        print(num,'occurance info:', len(y_train), label_pred_counts[num], label_pred_counts[num]/len(y_train))
 
     # create student model
     tf.random.set_seed(0)
