@@ -39,9 +39,9 @@ def get_recall(this_class, y_preds, y_trues, correct_preds):
         return 0
     return correct_preds / (correct_preds + false_negs)
 
-def test_model(model, file_name):
+def test_model(model):
     # get unseen testing data
-    eval_test_file = 'eeg_no_pred/' + file_name
+    eval_test_file = 'eeg_no_pred/' + 'EP_PSG_031521_EE213id31.npz'
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
     y_test = eval_test_data['y']
@@ -143,8 +143,7 @@ if __name__ == '__main__':
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # test
-    # get unseen testing data from some random file
-    test_model(model, 'EP_PSG_031521_EE213id31.npz')
+    test_model(model)
     
     # model info
     #model.summary()
