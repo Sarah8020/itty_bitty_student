@@ -40,7 +40,7 @@ def get_recall(this_class, y_preds, y_trues, correct_preds):
     return correct_preds / (correct_preds + false_negs)
 
 def test_model(model):
-    # get unseen testing data
+    # get some unseen testing data
     eval_test_file = 'eeg_no_pred/' + 'EP_PSG_031521_EE213id31.npz'
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
@@ -81,8 +81,7 @@ if __name__ == '__main__':
     predict_file = 'teacher_predict/' + 'pred_EP_PSG_021921_EE141_01id0.npz'
     predict_data = load(predict_file)
     y_train = predict_data['y_pred']
-
-    overall_matches = 0
+    
     # get all training file names
     file_list = listdir('eeg_fpz_cz/')
     # go through files and get training data
@@ -95,14 +94,13 @@ if __name__ == '__main__':
         print('getting ', item)
         pred_file = 'teacher_predict/' + 'pred_' + item
         pred_data = load(pred_file)
-        #accuracy = get_pred_accuracy(pred_data['y_pred'], pred_data['y_true'])
-        #print('individual file accuracy:', item, str(accuracy))
+        accuracy = get_pred_accuracy(pred_data['y_pred'], pred_data['y_true'])
+        print('individual file accuracy:', item, str(accuracy))
         y_train = np.concatenate((y_train, pred_data['y_pred']))
         # get x training data
         train_file = 'eeg_fpz_cz/' + item
         train_data = load(train_file)
         x_train = np.concatenate((x_train, train_data['x']))
-        # check overall tsn accuracy
         y_true_labels = np.concatenate((y_true_labels, pred_data['y_true']))
     
     accuracy = get_pred_accuracy(y_train, y_true_labels)
