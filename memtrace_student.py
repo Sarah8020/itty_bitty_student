@@ -45,7 +45,7 @@ if __name__ == '__main__':
     model.compile(optimizer='adam',
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy'])
-    model.fit(x_train, y_train, epochs=4)
+    model.fit(x_train, y_train, epochs=10, shuffle=True, steps_per_epoch=200)
     
     peak_mem = tracemalloc.get_traced_memory()[1]
     print('peak mem usage:', peak_mem, 'bytes')
