@@ -70,7 +70,7 @@ def test_model(model):
     avg_f1 = sum(f1s)/4
     print('avg f1:', avg_f1)
     
-    return avg_f1, float(val_acc), item
+    return avg_f1, float(val_acc)
 
 if __name__ == '__main__':
     # initialize testing data
@@ -95,8 +95,8 @@ if __name__ == '__main__':
         print('getting ', item)
         pred_file = 'teacher_predict/' + 'pred_' + item
         pred_data = load(pred_file)
-        accuracy = get_pred_accuracy(pred_data['y_pred'], pred_data['y_true'])
-        print('individual file accuracy:', item, str(accuracy))
+        #accuracy = get_pred_accuracy(pred_data['y_pred'], pred_data['y_true'])
+        #print('individual file accuracy:', item, str(accuracy))
         y_train = np.concatenate((y_train, pred_data['y_pred']))
         # get x training data
         train_file = 'eeg_fpz_cz/' + item
@@ -106,7 +106,7 @@ if __name__ == '__main__':
         y_true_labels = np.concatenate((y_true_labels, pred_data['y_true']))
     
     accuracy = get_pred_accuracy(y_train, y_true_labels)
-    print('tsn preds overall accuracy:', item, str(accuracy))
+    print('tsn preds overall accuracy:', str(accuracy))
 
     print('x training length:', str(len(x_train)))
     
