@@ -45,12 +45,11 @@ def test_model(model):
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
     y_test = eval_test_data['y']
-    # evaluate
+    # evaluate using testing data
     val_loss, val_acc = model.evaluate(x_test, y_test)
     print('loss on unseen data set:', str(val_loss))
     print('accuracy on unseen data set:', str(val_acc))
-        
-    # get precision/ recall (per class)
+    
     # get y preds for x_test
     predictions = model.predict(x_test)
     y_preds = []
@@ -90,12 +89,12 @@ if __name__ == '__main__':
             continue
         if item == 'EP_PSG_021921_EE141_01id0.npz':
             continue
-        # use teacher predictions as soft targets
         print('getting ', item)
         pred_file = 'teacher_predict/' + 'pred_' + item
         pred_data = load(pred_file)
         accuracy = get_pred_accuracy(pred_data['y_pred'], pred_data['y_true'])
         print('individual file accuracy:', item, str(accuracy))
+        # use teacher predictions as soft targets
         y_train = np.concatenate((y_train, pred_data['y_pred']))
         # get x training data
         train_file = 'eeg_fpz_cz/' + item
