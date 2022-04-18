@@ -6,72 +6,7 @@ from os import listdir
 import time
 from sklearn.utils import class_weight
 
-# get accuracy for a single prediction file
-def get_pred_accuracy(preds, reals):
-    matches = 0
-    for i in range(len(preds)):
-        if preds[i] == reals[i]:
-            matches += 1
-    accuracy = matches / len(preds)
-    return accuracy
-
-# get precision for student
-def get_prec(this_class, y_preds, y_trues):
-    true_count = 0
-    for num in y_trues:
-        if num == this_class:
-            true_count += 1
-    correct_preds = 0
-    for i in range(len(y_preds)):
-        if y_preds[i] == this_class and y_trues[i] == this_class:
-            correct_preds += 1
-    if true_count == 0:
-        return 0, 0
-    return (correct_preds / true_count), correct_preds
-
-# get recall for student
-def get_recall(this_class, y_preds, y_trues, correct_preds):
-    false_negs = 0
-    for i in range(len(y_preds)):
-        if y_preds[i] == this_class and y_trues[i] != this_class:
-            false_negs += 1
-    if (correct_preds + false_negs) < 0.000001:
-        return 0
-    return correct_preds / (correct_preds + false_negs)
-
-def test_model(model):
-    # get some unseen testing data
-    eval_test_file = 'eeg_no_pred/' + 'EP_PSG_031521_EE213id31.npz'
-    eval_test_data = load(eval_test_file)
-    x_test = eval_test_data['x']
-    y_test = eval_test_data['y']
-    # evaluate using testing data
-    val_loss, val_acc = model.evaluate(x_test, y_test)
-    print('loss on unseen data set:', str(val_loss))
-    print('accuracy on unseen data set:', str(val_acc))
-    
-    # get y preds for x_test
-    predictions = model.predict(x_test)
-    y_preds = []
-    for i in range(len(predictions)):
-        y_preds.append(np.argmax(predictions[i]))
-    # get precision/ recall/ f1 score for each class
-    all_ys = [0,1,2,3]
-    f1s = []
-    for num in all_ys:
-        prec, correct_preds = get_prec(num, y_preds, y_test)
-        recall = get_recall(num, y_preds, y_test, correct_preds)
-        f1 = 0
-        if prec+recall > 0.000001:
-            f1 = 2*((prec*recall)/(prec+recall))
-            f1s.append(f1)
-        print('class:', num, 'precision:', prec, 'recall:', recall, 'f1:', f1)
-    avg_f1 = sum(f1s)/4
-    print('avg f1:', avg_f1)
-    
-    return avg_f1, float(val_acc)
-
-if __name__ == '__main__':
+def main():
     # initialize testing data
     true_file = 'eeg_fpz_cz/' + 'EP_PSG_021921_EE141_01id0.npz'
     true_data = load(true_file)
@@ -92,8 +27,8 @@ if __name__ == '__main__':
         print('getting ', item)
         pred_file = 'teacher_predict/' + 'pred_' + item
         pred_data = load(pred_file)
-        accuracy = get_pred_accuracy(pred_data['y_pred'], pred_data['y_true'])
-        print('individual file accuracy:', item, str(accuracy))
+        #accuracy = get_pred_accuracy(pred_data['y_pred'], pred_data['y_true'])
+        #print('individual file accuracy:', item, str(accuracy))
         # use teacher predictions as soft targets
         y_train = np.concatenate((y_train, pred_data['y_pred']))
         # get x training data
@@ -144,10 +79,81 @@ if __name__ == '__main__':
     
     # model info
     #model.summary()
+    
+    save_model(model)
 
+def save_model(model):
     # save model
     model.save('student.model')
     conv = tf.lite.TFLiteConverter.from_saved_model('student.model')
     lite_student_model = conv.convert()
     with open('student_model.tflite', 'wb') as lite_file:
         lite_file.write(lite_student_model)
+
+# get precision for student
+def get_prec(this_class, y_preds, y_trues):
+    true_count = 0
+    for num in y_trues:
+        if num == this_class:
+            true_count += 1
+    correct_preds = 0
+    for i in range(len(y_preds)):
+        if y_preds[i] == this_class and y_trues[i] == this_class:
+            correct_preds += 1
+    if true_count == 0:
+        return 0, 0
+    return (correct_preds / true_count), correct_preds
+
+# get recall for student
+def get_recall(this_class, y_preds, y_trues, correct_preds):
+    false_negs = 0
+    for i in range(len(y_preds)):
+        if y_preds[i] == this_class and y_trues[i] != this_class:
+            false_negs += 1
+    if (correct_preds + false_negs) < 0.000001:
+        return 0
+    return correct_preds / (correct_preds + false_negs)
+
+# get accuracy for a single prediction file
+def get_pred_accuracy(preds, reals):
+    matches = 0
+    for i in range(len(preds)):
+        if preds[i] == reals[i]:
+            matches += 1
+    accuracy = matches / len(preds)
+    return accuracy
+
+def test_model(model):
+    # get some unseen testing data
+    eval_test_file = 'eeg_no_pred/' + 'EP_PSG_031521_EE213id31.npz'
+    eval_test_data = load(eval_test_file)
+    x_test = eval_test_data['x']
+    y_test = eval_test_data['y']
+    # evaluate using testing data
+    val_loss, val_acc = model.evaluate(x_test, y_test)
+    print('loss on unseen data set:', str(val_loss))
+    print('accuracy on unseen data set:', str(val_acc))
+    
+    # get y preds for x_test
+    predictions = model.predict(x_test)
+    y_preds = []
+    for i in range(len(predictions)):
+        y_preds.append(np.argmax(predictions[i]))
+    # get precision/ recall/ f1 score for each class
+    all_ys = [0,1,2,3]
+    f1s = []
+    for num in all_ys:
+        prec, correct_preds = get_prec(num, y_preds, y_test)
+        recall = get_recall(num, y_preds, y_test, correct_preds)
+        f1 = 0
+        if prec+recall > 0.000001:
+            f1 = 2*((prec*recall)/(prec+recall))
+            f1s.append(f1)
+        print('class:', num, 'precision:', prec, 'recall:', recall, 'f1:', f1)
+    avg_f1 = sum(f1s)/4
+    print('avg f1:', avg_f1)
+    
+    return avg_f1, float(val_acc)
+
+if __name__ == '__main__':
+    main()
