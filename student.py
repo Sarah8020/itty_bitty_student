@@ -136,8 +136,7 @@ if __name__ == '__main__':
     training_weight = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
     training_weight = dict(enumerate(training_weight))
     print('automated weights:', training_weight)
-    manual_weights = {0:1, 1:1, 2:1, 3:1}
-    model.fit(x_train, y_train, epochs=10, shuffle=True, steps_per_epoch=200, class_weight=manual_weights)
+    model.fit(x_train, y_train, epochs=10, shuffle=True, steps_per_epoch=200)
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # test
