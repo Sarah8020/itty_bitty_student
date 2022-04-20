@@ -55,6 +55,7 @@ def main():
 
     # create student model
     tf.random.set_seed(0)
+    np.random.seed(0)
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Flatten())
     model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
