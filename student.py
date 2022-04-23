@@ -52,7 +52,7 @@ def main():
             correct_preds[y_train[i]] += 1
     for num in [0,1,2,3]:
         print(num,'occurance info:', len(y_train), label_pred_counts[num], label_pred_counts[num]/len(y_train))
-
+    
     # create student model
     tf.random.set_seed(0)
     np.random.seed(0)
@@ -72,7 +72,7 @@ def main():
     training_weight = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
     training_weight = dict(enumerate(training_weight))
     print('automated weights:', training_weight)
-    model.fit(x_train, y_train, epochs=10, shuffle=True, steps_per_epoch=200)
+    model.fit(x_train, y_train, epochs=10, steps_per_epoch=200, shuffle=True)
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # test
@@ -153,8 +153,23 @@ def test_model(model):
         print('class:', num, 'precision:', prec, 'recall:', recall, 'f1:', f1)
     avg_f1 = sum(f1s)/4
     print('avg f1:', avg_f1)
+    print('len of preds:', len(y_preds))
     
-    return avg_f1, float(val_acc)
+    return y_preds, y_test
+    
+def reduce_training_size(x_train, y_train, max_size):
+    y_counts = [0,0,0,0]
+    short_x_train = []
+    short_y_train = []
+    for i, label in enumerate(y_train):
+        if y_counts[label] > max_size:
+            continue
+        y_counts[label] += 1
+        short_x_train.append(x_train[i])
+        short_y_train.append(label)
+    x_train = np.array(short_x_train)
+    y_train = np.array(short_y_train)
+    return x_train, y_train
 
 if __name__ == '__main__':
     main()
