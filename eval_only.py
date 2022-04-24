@@ -7,7 +7,7 @@ from numpy import load
 if __name__ == '__main__':
     # ----open model
     model = tf.keras.models.load_model('student.model')
-    y_pred, y_true = student.test_model(model)
+    y_pred, y_true, f1, acc = student.test_model(model)
     
     pred_len = len(y_pred)
     conf = []

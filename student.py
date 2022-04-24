@@ -76,7 +76,7 @@ def main():
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # test
-    test_model(model)
+    test_model(model, None)
     
     # model info
     #model.summary()
@@ -124,9 +124,10 @@ def get_pred_accuracy(preds, reals):
     accuracy = matches / len(preds)
     return accuracy
 
-def test_model(model):
+def test_model(model, eval_test_file='eeg_no_pred/' + 'multfile2.npz'):
     # get some unseen testing data
-    eval_test_file = 'eeg_no_pred/' + 'multfile.npz'
+    if not eval_test_file:
+        eval_test_file = 'eeg_no_pred/' + 'multfile2.npz'
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
     y_test = eval_test_data['y']
@@ -155,7 +156,7 @@ def test_model(model):
     print('avg f1:', avg_f1)
     print('len of preds:', len(y_preds))
     
-    return y_preds, y_test
+    return y_preds, y_test, avg_f1, val_acc
     
 def reduce_training_size(x_train, y_train, max_size):
     y_counts = [0,0,0,0]
