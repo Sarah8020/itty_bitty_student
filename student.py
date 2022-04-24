@@ -94,7 +94,7 @@ def save_model(model):
 # get precision for student
 def get_prec(this_class, y_preds, y_trues):
     true_count = 0
-    for num in y_trues:
+    for num in y_preds:
         if num == this_class:
             true_count += 1
     correct_preds = 0
@@ -109,7 +109,7 @@ def get_prec(this_class, y_preds, y_trues):
 def get_recall(this_class, y_preds, y_trues, correct_preds):
     false_negs = 0
     for i in range(len(y_preds)):
-        if y_preds[i] == this_class and y_trues[i] != this_class:
+        if y_preds[i] != this_class and y_trues[i] == this_class:
             false_negs += 1
     if (correct_preds + false_negs) < 0.000001:
         return 0
