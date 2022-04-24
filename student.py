@@ -126,7 +126,7 @@ def get_pred_accuracy(preds, reals):
 
 def test_model(model):
     # get some unseen testing data
-    eval_test_file = 'eeg_no_pred/' + 'EP_PSG_031521_EE213id31.npz'
+    eval_test_file = 'eeg_no_pred/' + 'multfile.npz'
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
     y_test = eval_test_data['y']
