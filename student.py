@@ -76,7 +76,7 @@ def main():
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # test
-    test_model(model, None)
+    test_model(model)
     
     # model info
     #model.summary()
@@ -126,8 +126,6 @@ def get_pred_accuracy(preds, reals):
 
 def test_model(model, eval_test_file='eeg_no_pred/' + 'multfile2.npz'):
     # get some unseen testing data
-    if not eval_test_file:
-        eval_test_file = 'eeg_no_pred/' + 'multfile2.npz'
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
     y_test = eval_test_data['y']
