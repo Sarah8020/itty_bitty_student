@@ -124,8 +124,9 @@ def get_pred_accuracy(preds, reals):
     accuracy = matches / len(preds)
     return accuracy
 
-def test_model(model, eval_test_file='eeg_no_pred/' + 'multfile2.npz'):
+def test_model(model):
     # get some unseen testing data
+    eval_test_file='eeg_no_pred/' + 'multfile.npz'
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
     y_test = eval_test_data['y']
