@@ -1,5 +1,0 @@
-energyusage==0.0.14
-keras==2.7.0
-numpy==1.19.2
-scikit_learn==1.0.2
-tensorflow==2.7.0
