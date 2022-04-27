@@ -2,56 +2,14 @@ import tensorflow as tf
 import keras
 import numpy as np
 from numpy import load
-from os import listdir
 import time
 from sklearn.utils import class_weight
 
 def main():
     # initialize testing data
-    true_file = 'eeg_fpz_cz/' + 'EP_PSG_021921_EE141_01id0.npz'
-    true_data = load(true_file)
-    x_train = true_data['x']
-    y_true_labels = true_data['y']
-    predict_file = 'teacher_predict/' + 'pred_EP_PSG_021921_EE141_01id0.npz'
-    predict_data = load(predict_file)
-    y_train = predict_data['y_pred']
-    
-    # get all training file names
-    file_list = listdir('eeg_fpz_cz/')
-    # go through files and get training data
-    for item in file_list:
-        if not 'npz' in item:
-            continue
-        if item == 'EP_PSG_021921_EE141_01id0.npz':
-            continue
-        print('getting ', item)
-        pred_file = 'teacher_predict/' + 'pred_' + item
-        pred_data = load(pred_file)
-        #accuracy = get_pred_accuracy(pred_data['y_pred'], pred_data['y_true'])
-        #print('individual file accuracy:', item, str(accuracy))
-        # use teacher predictions as soft targets
-        y_train = np.concatenate((y_train, pred_data['y_pred']))
-        # get x training data
-        train_file = 'eeg_fpz_cz/' + item
-        train_data = load(train_file)
-        x_train = np.concatenate((x_train, train_data['x']))
-        y_true_labels = np.concatenate((y_true_labels, pred_data['y_true']))
-    
-    accuracy = get_pred_accuracy(y_train, y_true_labels)
-    print('tsn preds overall accuracy:', str(accuracy))
-
-    print('x training length:', str(len(x_train)))
-    
-    label_true_counts = [0,0,0,0]
-    label_pred_counts = [0,0,0,0]
-    correct_preds = [0,0,0,0]
-    for i in range(len(y_train)):
-        label_pred_counts[y_train[i]] += 1
-        label_true_counts[y_true_labels[i]] += 1
-        if y_train[i] == y_true_labels[i]:
-            correct_preds[y_train[i]] += 1
-    for num in [0,1,2,3]:
-        print(num,'occurance info:', len(y_train), label_pred_counts[num], label_pred_counts[num]/len(y_train))
+    training_data_file = load('student_train_set.npz')
+    x_train = training_data_file['x']
+    y_train = training_data_file['y']
     
     # create student model
     tf.random.set_seed(0)
@@ -126,7 +84,7 @@ def get_pred_accuracy(preds, reals):
 
 def test_model(model):
     # get some unseen testing data
-    eval_test_file='eeg_no_pred/' + 'multfile.npz'
+    eval_test_file='student_test_set.npz'
     eval_test_data = load(eval_test_file)
     x_test = eval_test_data['x']
     y_test = eval_test_data['y']
