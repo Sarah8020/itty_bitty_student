@@ -12,12 +12,7 @@ def train():
 
     # create student model
     tf.random.set_seed(0)
-    model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Flatten())
-    model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dropout(.05))
-    model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(4, activation=tf.nn.softmax))
+    model = tf.keras.models.load_model('student.model')
     
     # train
     model.compile(optimizer='adam',

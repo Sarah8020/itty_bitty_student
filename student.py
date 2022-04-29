@@ -14,11 +14,20 @@ def main():
     # create student model
     tf.random.set_seed(0)
     np.random.seed(0)
+    print(x_train.shape)
+    print(x_train[0].shape)
+    x_train = x_train.reshape(116800,3000,1)
+    
     model = tf.keras.models.Sequential()
+    model.add(tf.keras.layers.Input((3000,1)))
+    model.add(tf.keras.layers.Conv1D(64, kernel_size=100, activation=tf.nn.relu))
+    model.add(tf.keras.layers.MaxPooling1D(pool_size=100))
+    #model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
+    #model.add(tf.keras.layers.Dropout(.05))
+    #model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
+    #model.add(tf.keras.layers.Conv1D(64, kernel_size=100, activation=tf.nn.relu))
+    #model.add(tf.keras.layers.MaxPooling1D(pool_size=100))
     model.add(tf.keras.layers.Flatten())
-    model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dropout(.05))
-    model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
     model.add(tf.keras.layers.Dense(4, activation=tf.nn.softmax))
     
     start_train_time = time.time()
@@ -30,7 +39,7 @@ def main():
     training_weight = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
     training_weight = dict(enumerate(training_weight))
     print('automated weights:', training_weight)
-    model.fit(x_train, y_train, epochs=10, steps_per_epoch=200, shuffle=True)
+    model.fit(x_train, y_train, epochs=200, steps_per_epoch=200, shuffle=True)
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # test
