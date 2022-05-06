@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">SleepStageApp</string>
+
+    <string name="title">Sleep Staging</string>
+
+    <string name="recordButton">RECORD SLEEP</string>
+    <string name="recordButton2">STOP RECORDING</string>
+    <string name="stoppedrecording">Stopped</string>
+    <string name="resultsButton">Get Results</string>
+
+    <string name="blank"></string>
+
+    <string name="results">Results</string>
+    <string name="wake">Wake</string>
+    <string name="lightsleep">Light Sleep</string>
+    <string name="deepsleep">Deep Sleep</string>
+    <string name="rem">REM</string>
+
+
+</resources>
