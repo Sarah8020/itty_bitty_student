@@ -6,10 +6,15 @@ import time
 from sklearn.utils import class_weight
 
 def main():
-    # initialize testing data
+    # initialize training data
     training_data_file = load('student_train_set.npz')
     x_train = training_data_file['x']
     y_train = training_data_file['y']
+    
+    # get testing data
+    val_data_file = load('student_test_set.npz')
+    x_val = val_data_file['x']
+    y_val = val_data_file['y']
     
     # create student model
     tf.random.set_seed(0)
@@ -39,7 +44,7 @@ def main():
     training_weight = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
     training_weight = dict(enumerate(training_weight))
     print('automated weights:', training_weight)
-    model.fit(x_train, y_train, epochs=200, steps_per_epoch=200, shuffle=True)
+    model.fit(x_train, y_train, epochs=200, validation_data=(x_val, y_val), steps_per_epoch=100, shuffle=True)
     print('training time:', time.time() - start_train_time, 'seconds')
     
     # test
