@@ -9,6 +9,7 @@ if __name__ == '__main__':
     training_data_file = load('student_train_set.npz')
     x_train = training_data_file['x']
     y_train = training_data_file['y']
+    x_train = x_train.reshape(116800,3000,1)
 
     # create student model
     tf.random.set_seed(0)
